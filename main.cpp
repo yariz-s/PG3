@@ -1,58 +1,58 @@
-#include <stdio.h>
-#include <windows.h>
-#include <time.h>
+#include <iostream>
+using namespace std;
 
-// 関数ポインタPFuncを定義
-typedef void (*PFunc)(int*, int*);
+class Enemy {
+public:
+    void Update();
 
-// コールバック関数
-void DispResult(int* s, int* kazu) {
-    int kekka = rand() % 2;  // ランダムで0か1を決定
+    void Approach(); // 接近
+    void Attack();   // 攻撃
+    void Retreat();  // 離脱
 
-    if (kekka == *kazu) {
-        if (kekka == 0)
-            printf("%dで丁（偶数）でした! 大当たり!!\n", kekka);
-        else
-            printf("%dで半（奇数）でした! 大当たり!!\n", kekka);
-    }
-    else {
-        if (kekka == 0)
-            printf("%dで丁（偶数）でした! 残念!!\n", kekka);
-        else
-            printf("%dで半（奇数）でした! 残念!!\n", kekka);
+    // 関数ポインタテーブル
+    static void (Enemy::* spFuncTable[])();
+
+private:
+    int index = 0;
+};
+
+void Enemy::Approach() {
+    cout << "敵が接近！" << endl;
+}
+
+void Enemy::Attack() {
+    cout << "敵が攻撃！" << endl;
+}
+
+void Enemy::Retreat() {
+    cout << "敵が離脱" << endl;
+}
+
+void Enemy::Update() {
+    // 関数テーブルから関数を実行
+    (this->*spFuncTable[index])();
+
+    cout << "次の状態に移行 (0: はい、 他: いいえ): ";
+    int input;
+    cin >> input;
+
+    if (input == 0) {
+        index = (index + 1) % 3;
     }
 }
 
-// コールバック関数を呼び出す
-void setTimeout(PFunc p, int second, int kazu) {
-    puts("さて結果は…\n");
-
-    for (int i = 0; i < second; i++) {
-        Sleep(1000);  // 1000ミリ秒＝1秒
-        printf("%d...\n", second - i);
-    }
-
-    p(&second, &kazu);
-}
+// メンバ関数ポインタテーブルの初期化
+void (Enemy::* Enemy::spFuncTable[])() = {
+    &Enemy::Approach, // インデックス0
+    &Enemy::Attack,   // インデックス1
+    &Enemy::Retreat   // インデックス2
+};
 
 int main() {
-    int kazu;
 
-    srand((unsigned int)time(NULL));  // 乱数の種を設定
+    Enemy enemy;
 
-    printf("丁（偶数）ならゼロ、半（奇数）なら1を入力してください\n");
-    scanf_s("%d", &kazu);
-
-    if (kazu == 0) {
-        puts("あなたは丁（偶数）を選びましたね？");
-    }
-    else {
-        puts("あなたは半（奇数）を選びましたね？");
-    }
-
-    PFunc p;
-    p = DispResult;  // DispResult関数のアドレスを代入
-    setTimeout(p, 3, kazu);
+    while (1) enemy.Update();
 
     return 0;
 }
