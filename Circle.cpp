@@ -6,5 +6,6 @@ void Circle::Size() {
 }
 
 void Circle::Draw() {
-	printf("%~‚円の面積%0.2f\n", answer);
+	printf("円の面積: %.2f\n", answer);
+
 }
