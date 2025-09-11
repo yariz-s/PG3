@@ -1,58 +1,47 @@
 #include <stdio.h>
-#include <windows.h>
-#include <time.h>
+#include <list>
+#include <iostream>
 
-// 関数ポインタPFuncを定義
-typedef void (*PFunc)(int*, int*);
+using namespace std;
 
-// コールバック関数
-void DispResult(int* s, int* kazu) {
-    int kekka = rand() % 2;  // ランダムで0か1を決定
+int main(void) {
+	// 初めは1970年の駅名リスト
+	list<const char*> eki_list{
+		"Tokyo", "Kanda", "Akihabara", "Okachimachi", "Ueno", "Uguisudani",
+		"Nippori", "Tabata", "Komagome", "Sugamo", "Otsuka", "Ikebukuro",
+		"Mejiro", "Takadanobaba", "Sin-Okubo", "Shinjuku", "Yoyogi", "Harajuku",
+		"Shibuya", "Ebisu", "Meguro", "Gotanda", "Osaki", "Sinagawa", "Tamachi",
+		"Hamamatsucho", "Shimbashi", "Yurakucho"
+	};
 
-    if (kekka == *kazu) {
-        if (kekka == 0)
-            printf("%dで丁（偶数）でした! 大当たり!!\n", kekka);
-        else
-            printf("%dで半（奇数）でした! 大当たり!!\n", kekka);
-    }
-    else {
-        if (kekka == 0)
-            printf("%dで丁（偶数）でした! 残念!!\n", kekka);
-        else
-            printf("%dで半（奇数）でした! 残念!!\n", kekka);
-    }
+	
+	printf("1970年\n");
+	for (list<const char*>::iterator it_f = eki_list.begin(); it_f != eki_list.end(); ++it_f) {
+		std::cout << *it_f << endl;
+	}
+
+	
+	printf("\n2019年\n");
+	for (list<const char*>::iterator it_f = eki_list.begin(); it_f != eki_list.end(); ++it_f) {
+		if (std::string(*it_f) == "Nippori") {
+			it_f = eki_list.insert(it_f, "Nishi-Nippori"); 
+			std::cout << *it_f << endl; // 追加した駅
+			++it_f; 
+		}
+		std::cout << *it_f << endl;
+	}
+
+
+	printf("\n2022年\n");
+	for (list<const char*>::iterator it_f = eki_list.begin(); it_f != eki_list.end(); ++it_f) {
+		if (std::string(*it_f) == "Sinagawa") {
+			it_f = eki_list.insert(it_f, "Takanawa Gateway");
+			std::cout << *it_f << endl;
+			++it_f;
+		}
+		std::cout << *it_f << endl;
+	}
+
+	return 0;
 }
 
-// コールバック関数を呼び出す
-void setTimeout(PFunc p, int second, int kazu) {
-    puts("さて結果は…\n");
-
-    for (int i = 0; i < second; i++) {
-        Sleep(1000);  // 1000ミリ秒＝1秒
-        printf("%d...\n", second - i);
-    }
-
-    p(&second, &kazu);
-}
-
-int main() {
-    int kazu;
-
-    srand((unsigned int)time(NULL));  // 乱数の種を設定
-
-    printf("丁（偶数）ならゼロ、半（奇数）なら1を入力してください\n");
-    scanf_s("%d", &kazu);
-
-    if (kazu == 0) {
-        puts("あなたは丁（偶数）を選びましたね？");
-    }
-    else {
-        puts("あなたは半（奇数）を選びましたね？");
-    }
-
-    PFunc p;
-    p = DispResult;  // DispResult関数のアドレスを代入
-    setTimeout(p, 3, kazu);
-
-    return 0;
-}
